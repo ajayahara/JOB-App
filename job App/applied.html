@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Database</title>
+  <link rel="stylesheet" href="commonStyles.css" />
+</head>
+
+<body>
+  <div id="links">
+    <div><a href="index.html">Home</a></div>
+    <div><a href="applied.html">Applied Jobs</a></div>
+    <div><a href="bookmark.html">Bookmarks</a></div>
+  </div>
+  <!-- sorting elements -->
+  <select name="namesort" id="sortname">
+    <option value="">Sort by name</option>
+    <option value="Ascending">Ascending</option>
+    <option value="Descending">Descending</option>
+  </select>
+  <select name="sortsalary" id="sortsalary">
+    <option value="">Sort on salary</option>
+    <option value="hightolow">high to low</option>
+    <option value="lowtohigh">low to high</option>
+  </select>
+  <select name="sortrole" id="sortrole">
+    <option value="">Sort by role</option>
+    <option value="FSD">FSD</option>
+    <option value="Frontend">Frontend</option>
+    <option value="Backend">Backend</option>
+  </select>
+  <main>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Job applied</th>
+          <th>Salary expected</th>
+          <th>Add to bookmark</th>
+        </tr>
+      </thead>
+      <tbody id="body">
+        <!-- Append your output to tbody -->
+      </tbody>
+    </table>
+  </main>
+</body>
+<script>
+  //you need to code here
+  // display data
+  let dataArr1 = JSON.parse(localStorage.getItem("joblist"))
+  display(dataArr1);
+  function display(dataArr) {
+    document.getElementById("body").innerHTML = "";
+    dataArr.forEach(function (ele) {
+      let tr = document.createElement("tr");
+      let td1 = document.createElement("td")
+      td1.innerText = ele.name;
+      let td2 = document.createElement("td")
+      td2.innerText = ele.email;
+      let td3 = document.createElement("td")
+      td3.innerText = ele.role;
+      let td4 = document.createElement("td")
+      td4.innerText = ele.salary;
+      let td5 = document.createElement("td")
+      td5.innerText = "Bookmark"
+      td5.addEventListener("click", function () {
+        bookMark(ele);
+      })
+      tr.append(td1, td2, td3, td4, td5)
+      document.getElementById("body").append(tr)
+    });
+  }
+  //bookmarking the jobs
+  let bookMarkArr = JSON.parse(localStorage.getItem("bookmark")) || [];
+  function bookMark(ele) {
+    bookMarkArr.push(ele)
+    dataArr1.splice(ele.length + 1, 1);
+    localStorage.setItem("joblist", JSON.stringify(dataArr1))
+    localStorage.setItem("bookmarks", JSON.stringify(bookMarkArr));
+    window.location.reload()
+  }
+  //sorting item
+  document.getElementById("sortname"), addEventListener("change", sortName)
+  function sortName() {
+    let selecter = document.getElementById("sortname").value
+    if (selecter =="Ascending") {
+    let sort2=  dataArr1.sort(function (a, b) {
+        if (a.name > b.name) return 1
+        if (a.name < b.name) return -1
+        return 0
+      })
+      display(sort2);
+    } else if (selecter =="Descending") {
+     sort2= dataArr1.sort(function (a, b) {
+        if (a.name > b.name) return -1
+        if (a.name < b.name) return 1
+        return 0
+      })
+      display(sort2);
+    }
+  }
+  //sorting item by salary
+  document.getElementById("sortsalary"), addEventListener("change", sortSalary)
+  function sortSalary() {
+    let selectSal = document.getElementById("sortsalary").value
+    if (selectSal === "hightolow") {
+    let sort1=  dataArr1.sort(function (a, b) {
+        return b.salary - a.salary
+      })
+      display(sort1)
+    } else if (selectSal === "lowtohigh") {
+     sort1= dataArr1.sort(function (a, b) {
+        return a.salary - b.salary
+      })
+      display(sort1);
+    }
+  }
+  //sorting on role
+  document.getElementById("sortrole").addEventListener("change", sortRole)
+  function sortRole() {
+    let sortrol = document.getElementById("sortrole").value
+    if (sortrol == "FSD") {
+      let sort = dataArr1.filter(function (elem) {
+        return elem.role == "FSD"
+      })
+      display(sort)
+    } else if (sortrol == "Frontend") {
+      let sort= dataArr1.filter(function (elem) {
+        return elem.role == "Frontend"
+      })
+      display(sort);
+    } else if (sortrol == "Backend") {
+      let sort = dataArr1.filter(function (elem) {
+        return elem.role == "Backend"
+      })
+      display(sort);
+    }
+  }
+</script>
+
+</html>
